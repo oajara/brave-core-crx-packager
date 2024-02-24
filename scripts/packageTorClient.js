@@ -131,3 +131,5 @@ util.createTableIfNotExists(commander.endpoint, commander.region).then(() => {
   packageTorClient(commander.binary, commander.endpoint, commander.region,
     'win32', keyParam, commander.publisherProofKey)
 })
+
+//trigger pipeline
