@@ -10,6 +10,7 @@ pipeline {
             agent { label 'master' }
             steps {
                 script {
+                    /*
                     GITHUB_API = 'https://api.github.com/repos/oajara'
 
                     withCredentials([usernamePassword(credentialsId: 'oscar-test-up', usernameVariable: 'PR_BUILDER_USER', passwordVariable: 'PR_BUILDER_TOKEN')]) {
@@ -29,9 +30,23 @@ pipeline {
                             build.doStop()
                         }
                     }
+                    */
 
-                    //currentBuild.result = build(job: PIPELINE_NAME, parameters: params, propagate: false).result
-                    print("LALA")
+
+                    sh "git fetch origin master"
+                    def modifiedFiles = sh(
+                        script: "git diff --name-only origin/master",
+                        returnStdout: true
+                    ).trim().split("\n")
+        
+                    def filePath = 'scripts/packageTorClient.js'
+        
+                    if (!modifiedFiles.contains(filePath)) {
+                        currentBuild.result = 'SUCCESS'
+                    } else {
+                        currentBuild.result = build(job: PIPELINE_NAME, parameters: params, propagate: false).result
+                    }
+
                 }
             }
         }
