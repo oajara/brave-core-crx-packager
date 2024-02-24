@@ -32,7 +32,6 @@ pipeline {
                     }
                     */
 
-
                     sh "git fetch origin master"
                     def modifiedFiles = sh(
                         script: "git diff --name-only origin/master",
@@ -40,13 +39,15 @@ pipeline {
                     ).trim().split("\n")
         
                     def filePath = 'scripts/packageTorClient.js'
-        
                     if (!modifiedFiles.contains(filePath)) {
+                        print("No changes detected in ${filePath}")
                         currentBuild.result = 'SUCCESS'
                     } else {
-                        currentBuild.result = build(job: PIPELINE_NAME, parameters: params, propagate: false).result
+                        def PIPELINE_NAME = "brave-core-ext-tor-client-update-publish-dev"
+                        def params = [string(name: "BRANCH", value: BRANCH), bool(name: "UPLOAD", value: false)]
+                        print("Changes detected in ${filePath}. Running ${PIPELINE_NAME}")
+                        currentBuild.result = build(job: PIPELINE_NAME, parameters: params, wait: true, propagate: false).result
                     }
-
                 }
             }
         }
